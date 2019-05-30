@@ -29,7 +29,7 @@ pipeline {
         stage('Deploy to S3') {
 
             environment {
-                SERVICE_CREDS = credentials(${params.jenkins_aws_cred})
+                SERVICE_CREDS = credentials("${params.jenkins_aws_cred}")
             }
             steps {
                 sh"""

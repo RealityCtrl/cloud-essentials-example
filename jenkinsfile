@@ -2,6 +2,7 @@
 pipeline {
     agent any
     parameters{
+        choice(name: 'TYPE', choices: ['Build', 'Deploy'], description: 'Build or deploy')
         string(name: 'Region', defaultValue: 'us-east-1', description: 'aws region to deploy code to')
         string(name: 'Deployment_bucket', defaultValue: '', description: 'Name of S3 bucket to deploy code to')
         string(name: 'jenkins_aws_cred', defaultValue: '', description: 'Name of jenkins credential with aws credentials')
@@ -13,6 +14,9 @@ pipeline {
 
     stages {
         stage('Build Dependencies') {
+            when{
+                 expression { params.TYPE == "Build"}
+            }
             steps {
                 checkout scm
                 sh "npm install"
@@ -20,14 +24,18 @@ pipeline {
         }
 
         stage('Package') {
-
+            when{
+                                 expression { params.TYPE == "Build"}
+            }
             steps {
                 sh  "npm run build-aws-resource"
             }
         }
 
         stage('Deploy to S3') {
-
+            when{
+                 expression { params.TYPE == "Build"}
+            }
             environment {
                 SERVICE_CREDS = credentials("${params.jenkins_aws_cred}")
             }

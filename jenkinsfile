@@ -2,7 +2,9 @@
 pipeline {
     agent any
     parameters{
+        string(name: 'Region', defaultValue: 'us-east-1', description: 'aws region to deploy code to')
         string(name: 'Deployment_bucket', defaultValue: '', description: 'Name of S3 bucket to deploy code to')
+        string(name: 'jenkins_aws_cred', defaultValue: '', description: 'Name of jenkins credential with aws credentials')
     }
     options { 
         skipDefaultCheckout()
@@ -26,8 +28,19 @@ pipeline {
 
         stage('Deploy to S3') {
 
+            environment {
+                SERVICE_CREDS = credentials(${params.jenkins_aws_cred})
+            }
             steps {
-                sh  "aws s3 cp cloud-essentials-example.zip s3://${params.Deployment_bucket}/"
+                sh"""
+                    export AWS_CONFIG_FILE="$WORKSPACE/config"
+                    aws configure set region $Region --profile default
+                    aws configure set aws_access_key_id $SERVICE_CREDS_USR
+                    aws configure set aws_secret_access_key $SERVICE_CREDS_PSW
+                """
+                sh  "
+                aws s3 cp cloud-essentials-example.zip s3://${params.Deployment_bucket}/
+                "
             }
         }
     }

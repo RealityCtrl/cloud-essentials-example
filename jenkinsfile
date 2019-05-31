@@ -49,5 +49,20 @@ pipeline {
                 sh  "aws s3 cp cloud-essentials-example.zip s3://${params.Deployment_bucket}/"
             }
         }
+
+        stage('Deploy stack') {
+            environment {
+                SERVICE_CREDS = credentials("${params.jenkins_aws_cred}")
+            }
+            steps {
+                sh"""
+                    export AWS_CONFIG_FILE="$WORKSPACE/config"
+                    aws configure set region $Region --profile default
+                    aws configure set aws_access_key_id $SERVICE_CREDS_USR
+                    aws configure set aws_secret_access_key $SERVICE_CREDS_PSW
+                """
+                sh  "aws cloudformation create-stack --stack-name CloudEssentialsNodeEC2 --template-url file://template.json"
+            }
+        }
     }
 }

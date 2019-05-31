@@ -73,7 +73,7 @@
     "Type" : "AWS::IAM::InstanceProfile",
     "Properties" : {
       "Path" : "/",
-      "Roles" : ["Ec2ToS3Role"]
+      "Roles" : ["S3-Admin"]
     }
   },
 

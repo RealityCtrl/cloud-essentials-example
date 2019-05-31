@@ -127,6 +127,7 @@
           "#!/bin/bash\n",
           "cd /home/ec2-user\n",
           "aws s3 cp s3://cloud-essentials-deployment-bucket/cloud-essentials-example.zip /home/ec2-user/cloud-essentials-example.zip\n",
+          "cd /home/ec2-user/\n",
           "unzip cloud-essentials-example.zip\n",
           "nohup npm start > ec2dep.log\n"
         ]]}}
